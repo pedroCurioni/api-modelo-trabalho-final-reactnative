@@ -33,22 +33,30 @@ public class ProdutoService {
 	}
 	
 	public List<ProdutoDTO> findAllDTO(Integer pagina, Integer qtdRegistros){
-		List<Produto> listProduto = new ArrayList<>();
+        List<Produto> listProduto = new ArrayList<>();
 
-		if(null != pagina && null != qtdRegistros) { 
-			Pageable page = PageRequest.of(pagina, qtdRegistros);
-			Page<Produto> produtoPageable = produtoRepository.findAll(page);
-			listProduto = produtoPageable.getContent();
-		}else {
-			listProduto = produtoRepository.findAll();
-		}
-		
-		return listProduto.stream()
-		        .map(entity -> new ProdutoDTO(entity.getIdProduto(), entity.getSku(), entity.getNomeProduto(), entity.getDescricaoProduto(), entity.getImagemProduto(),
-		        		entity.getPrecoProduto(), null != entity.getFornecedor() ? entity.getFornecedor().getRazaoSocial() : null, 
-		        				null != entity.getCategoria() ? entity.getCategoria().getNomeCategoria() : null))
-		        .collect(Collectors.toList());
-	}
+        if(null != pagina && null != qtdRegistros) { 
+            Pageable page = PageRequest.of(pagina, qtdRegistros);
+            Page<Produto> produtoPageable = produtoRepository.findAll(page);
+            listProduto = produtoPageable.getContent();
+        }else {
+            listProduto = produtoRepository.findAll();
+        }
+
+        return listProduto.stream()
+                .map(entity -> new ProdutoDTO(
+                        entity.getIdProduto(), 
+                        entity.getSku(), 
+                        entity.getNomeProduto(),
+                        entity.getDescricaoProduto(), 
+                        entity.getImagemProduto(),
+                        entity.getPrecoProduto(),
+                        entity.getFornecedor().getRazaoSocial(),
+                        entity.getFornecedor().getIdFornecedor(),
+                        entity.getCategoria().getNomeCategoria(),
+                        entity.getCategoria().getIdCategoria()))
+                .collect(Collectors.toList());
+    }
 	
 	public List<ProdutoInterfaceDTO> buscaDTO(String keyword){
 		return produtoRepository.busca(keyword);
