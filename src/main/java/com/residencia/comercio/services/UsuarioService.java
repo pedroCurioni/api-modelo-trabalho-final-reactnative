@@ -25,24 +25,18 @@ public class UsuarioService {
 	@Autowired
 	ArquivoService arquivoService;
 	
-	public Usuario save(String usuarioJson, MultipartFile file) {
-		Usuario usuario = convertUsuarioFromStringJson(usuarioJson);
+	public Usuario save(Usuario usuario) {
 		String encodedPass = passwordEncoder.encode(usuario.getSenha());
 		usuario.setSenha(encodedPass);
-		Usuario novoUsuario = usuarioRepository.save(usuario);
-
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        fileName = "usuario_" + novoUsuario.getIdUsuario().toString() + "_" + fileName;
-        novoUsuario.setFotoPerfil(fileName);
-        arquivoService.storeFile(file, fileName);
         
-        return usuarioRepository.save(novoUsuario); 
+        return usuarioRepository.save(usuario); 
 	}
 	
 	public Usuario alteraSenha(UsuarioRecuperacaoSenhaDTO usuarioSenhaDTO) {
 		Usuario usuario = usuarioRepository.findById(usuarioSenhaDTO.getIdUsuario()).get();
 		usuario.setSenha(usuarioSenhaDTO.getSenha());
-		return usuarioRepository.save(usuario);
+		usuarioRepository.save(usuario);
+		return usuario;
 	}
 	
 	private Usuario convertUsuarioFromStringJson(String usuarioJson) {
